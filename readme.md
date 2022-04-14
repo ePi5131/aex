@@ -48,9 +48,6 @@ extern "C" __declspec(dllexport) PF_Err PluginDataEntryFunction(PF_PluginDataPtr
 
 例(Skeleton)
 ```cpp
-#include <memory>
-#include <format>
-
 #define NOMINMAX
 #include <Windows.h>
 
