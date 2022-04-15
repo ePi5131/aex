@@ -44,6 +44,12 @@ public:
 
         case PF_Cmd::Render:
             return Render();
+
+        case PF_Cmd::SmartPreRender:
+            return SmartPreRender();
+
+        case PF_Cmd::SmartRender:
+            return SmartRender();
         }
         return PF_Err::None;
     }
@@ -65,90 +71,13 @@ protected:
         return PF_Err::None;
     }
 
-    virtual PF_Err GlobalSetUp() noexcept = 0;
+    virtual PF_Err GlobalSetUp() noexcept { return PF_Err::None; }
+    virtual PF_Err ParamsSetUp() noexcept { return PF_Err::None; }
+    virtual PF_Err Render() noexcept { return PF_Err::None; }
+    virtual PF_Err SmartPreRender() noexcept { return PF_Err::None; };
+    virtual PF_Err SmartRender() noexcept { return PF_Err::None; };
 
-    virtual PF_Err ParamsSetUp() noexcept = 0;
-
-    virtual PF_Err Render() noexcept = 0;
-
-
-    inline PF_Err AddFloatSlider(const char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort curve_tolerance, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_FSliderFlags what_phase, A_long id) const AEX_NOEXCEPT {
-        PF_ParamDef def {
-            .uu = {
-                .id = id
-            },
-            .param_type = PF_ParamType::FloatSlider,
-            .u = {
-                .fs_d = {
-                    .value = dflt,
-                    .valid_min = valid_min,
-                    .valid_max = valid_max,
-                    .slider_min = slider_min,
-                    .slider_max = slider_max,
-                    .dephault = dflt,
-                    .precision = prec,
-                    .display_flags = disp,
-                    .curve_tolerance = 0.05f, // AEFX_AUDIO_DEFAULT_CURVE_TOLERANCE
-                }
-            }
-        };
-        in_data->utils->ansi.strcpy(def.name, name);
-        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
-        return PF_Err::None;
-    }
-
-    inline PF_Err AddFloatSliderX(const char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
-        PF_ParamDef def {
-            .uu = {
-                .id = id
-            },
-            .param_type = PF_ParamType::FloatSlider,
-            .flags = flags,
-            .u = {
-                .fs_d = {
-                    .value = dflt,
-                    .valid_min = valid_min,
-                    .valid_max = valid_max,
-                    .slider_min = slider_min,
-                    .slider_max = slider_max,
-                    .dephault = dflt,
-                    .precision = prec,
-                    .display_flags = disp,
-                    .curve_tolerance = 0.05f, // AEFX_AUDIO_DEFAULT_CURVE_TOLERANCE
-                }
-            }
-        };
-        in_data->utils->ansi.strcpy(def.name, name);
-        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
-        return PF_Err::None;
-    }
-
-    inline PF_Err AddCheckBox(const char* name_a, const char* name_b, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
-        PF_ParamDef def {
-            .uu = {
-                .id = id
-            },
-            .param_type = PF_ParamType::Checkbox,
-            .flags = flags,
-            .u = {
-                .bd = {
-                    .value = dflt,
-                    .dephault = dflt,
-                    .u = {
-                        .nameptr = name_b
-                    },
-                }
-            },
-        };
-        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
-        return PF_Err::None;
-    }
-
-    inline PF_Err AddCheckBoxX(const char* name, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
-        return AddCheckBox(name, "", dflt, flags, id);
-    }
-
-    inline PF_Err AddColor(const char* name, A_u_char red, A_u_char green, A_u_char blue, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddColor(const A_u_char* name, A_u_char red, A_u_char green, A_u_char blue, A_long id) const AEX_NOEXCEPT {
         PF_ParamDef def {
             .uu = {
                 .id = id
@@ -176,6 +105,222 @@ protected:
         return PF_Err::None;
     }
     
+    inline PF_Err AddArbitrary2(const A_u_char* name, A_short width, A_short height, PF_ParamFlags flags, PF_ParamUIFlags pui_flags, PF_ArbitraryH dflt, A_long id, void* refcon) const AEX_NOEXCEPT {
+        PF_ParamDef def {
+            .uu = {
+                .id = id,
+            },
+            .ui_flags = pui_flags,
+            .ui_width = width,
+            .ui_height = height,
+            .param_type = PF_ParamType::ArbitraryData,
+            .flags = flags,
+            .u = { .arb_d = {
+                .id = id,
+                .pad = 0,
+                .dephault = dflt,
+                .value = NULL,
+                .refconPV = refcon
+            }},
+        };
+        in_data->utils->ansi.strcpy(def.name, name);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+        return PF_Err::None;
+    }
+
+    inline PF_Err AddArbitrary(const A_u_char* name, A_short width, A_short height, PF_ParamUIFlags pui_flags, PF_ArbitraryH dflt, A_long id, void* refcon) const AEX_NOEXCEPT {
+	    return AddArbitrary2(name, width, height, PF_ParamFlags::None, pui_flags, dflt, id, refcon);
+    }
+
+    inline PF_Err AddSlider(const A_u_char* name, PF_ParamValue valid_min, PF_ParamValue valid_max, PF_ParamValue  slider_min, PF_ParamValue slider_max, PF_ParamValue dflt, A_long id) const AEX_NOEXCEPT {
+        PF_ParamDef def {
+            .uu = {
+                .id = id,
+            },
+            .param_type = PF_ParamType::Slider,
+            .u = { .sd = {
+                .value = dflt,
+                .value_str = "",
+                .value_desc = "",
+                .valid_min = valid_min,
+                .valid_max = valid_max,
+                .slider_min = slider_min,
+                .slider_max = slider_max,
+                .dephault = dflt,
+            }}
+        };
+
+        in_data->utils->ansi.strcpy(def.name, name);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+
+        return PF_Err::None;
+    }
+
+    template<class T>
+    inline PF_Err AddFixed(const A_u_char* name, T valid_min, T valid_max, T slider_min, T slider_max, T dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+        auto value = static_cast<PF_Fixed>(dflt * 65536.0);
+        PF_ParamDef def {
+            .uu = {
+                .id = id,
+            },
+            .param_type = PF_ParamType::FixSlider,
+            .flags = flags,
+            .u = { .fd = {
+                .value = value,
+                .value_str = "",
+                .value_desc = "",
+                .valid_min = static_cast<PF_Fixed>(valid_min * 65536.0),
+                .valid_max = static_cast<PF_Fixed>(valid_max * 65536.0),
+                .slider_min = static_cast<PF_Fixed>(slider_min * 65536.0),
+                .slider_max = static_cast<PF_Fixed>(slider_max * 65536.0),
+                .dephault = value,
+                .precision = prec,
+                .display_flags = disp
+            }}
+        };
+
+		in_data->utils->ansi.strcpy(def.name, name);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+        return PF_Err::None;
+    }
+
+    inline static constexpr float AEFX_AUDIO_DEFAULT_CURVE_TOLERANCE = 0.05f;
+
+    inline PF_Err AddFloatSlider(const A_u_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort curve_tolerance, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_FSliderFlags what_phase, A_long id) const AEX_NOEXCEPT {
+        PF_ParamDef def {
+            .uu = {
+                .id = id
+            },
+            .param_type = PF_ParamType::FloatSlider,
+            .u = {
+                .fs_d = {
+                    .value = dflt,
+                    .valid_min = valid_min,
+                    .valid_max = valid_max,
+                    .slider_min = slider_min,
+                    .slider_max = slider_max,
+                    .dephault = dflt,
+                    .precision = prec,
+                    .display_flags = disp,
+                    .curve_tolerance = AEFX_AUDIO_DEFAULT_CURVE_TOLERANCE,
+                }
+            }
+        };
+        in_data->utils->ansi.strcpy(def.name, name);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+        return PF_Err::None;
+    }
+
+    inline PF_Err AddFloatSliderX(const A_u_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+        PF_ParamDef def {
+            .uu = {
+                .id = id
+            },
+            .param_type = PF_ParamType::FloatSlider,
+            .flags = flags,
+            .u = {
+                .fs_d = {
+                    .value = dflt,
+                    .valid_min = valid_min,
+                    .valid_max = valid_max,
+                    .slider_min = slider_min,
+                    .slider_max = slider_max,
+                    .dephault = dflt,
+                    .precision = prec,
+                    .display_flags = disp,
+                    .curve_tolerance = AEFX_AUDIO_DEFAULT_CURVE_TOLERANCE,
+                }
+            }
+        };
+        in_data->utils->ansi.strcpy(def.name, name);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+        return PF_Err::None;
+    }
+
+    inline PF_Err AddFloatExponentialSlider(const A_u_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort curve_tolerance, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, bool want_phase, PF_FpShort exponent, A_long id) {
+        PF_ParamDef def {
+            .uu = {
+                .id = id,
+            },
+            .param_type = PF_ParamType::FloatSlider,
+            .u = { .fs_d = {
+                .value = dflt,
+                .valid_min = valid_min,
+                .valid_max = valid_max,
+                .slider_min = slider_min,
+                .slider_max = slider_max,
+                .dephault = dflt,
+                .precision = prec,
+                .display_flags = disp,
+                .fs_flags = want_phase ? PF_FSliderFlags::WantPhase : PF_FSliderFlags::None,
+                .curve_tolerance = AEFX_AUDIO_DEFAULT_CURVE_TOLERANCE,
+               .useExponent = true,
+               .exponent = exponent
+            }},
+        };
+        
+        in_data->utils->ansi.strcpy(def.name, name);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+        return PF_Err::None;
+    }
+
+    inline PF_Err AddCheckBox(const A_u_char* name_a, const char* name_b, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+        PF_ParamDef def {
+            .uu = {
+                .id = id
+            },
+            .param_type = PF_ParamType::Checkbox,
+            .flags = flags,
+            .u = {
+                .bd = {
+                    .value = dflt,
+                    .dephault = dflt,
+                    .u = {
+                        .nameptr = name_b
+                    },
+                }
+            },
+        };
+        in_data->utils->ansi.strcpy(def.name, name_a);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+        return PF_Err::None;
+    }
+
+    inline PF_Err AddCheckBoxX(const A_u_char* name, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+        return AddCheckBox(name, "", dflt, flags, id);
+    }
+
+    // todo: その他パラメータ追加関数の追加
+
+    // AddButton
+
+    // AddAngle
+
+    // AddNull
+
+    // AddPopup
+
+    // AddLayer
+
+    // Add255Slider
+
+    // AddPercente
+
+    // AddPoint
+
+    // AddPoint3D
+
+    // AddTopic
+
+    // AddVersionedFlag
+
+    // AddTopicX
+
+    // AddPopupX
+
+    // AddFloatSliderXDisabled
+
+    // AddPointControl
 };
 
 }

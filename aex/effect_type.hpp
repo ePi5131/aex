@@ -124,7 +124,11 @@ namespace aex {
     template<>struct detail::flag::ops_def<PF_ParamFlags>{};
 
     using PF_ValueDisplayFlags = A_short;
-    using PF_FSliderFlags = A_u_long;
+    enum class PF_FSliderFlags : A_u_long {
+        None = 0,
+        WantPhase = 1 << 0
+    };
+    template<>struct aex::detail::flag::ops_def<PF_FSliderFlags>:std::true_type{};
     using PF_Quality = A_long;
     using PF_ParamValue = A_long;
     enum class PF_WorldFlags : A_long {
