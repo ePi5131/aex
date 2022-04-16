@@ -77,7 +77,7 @@ protected:
     virtual PF_Err SmartPreRender() noexcept { return PF_Err::None; };
     virtual PF_Err SmartRender() noexcept { return PF_Err::None; };
 
-    inline PF_Err AddColor(const A_u_char* name, A_u_char red, A_u_char green, A_u_char blue, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddColor(const A_char* name, A_u_char red, A_u_char green, A_u_char blue, A_long id) const AEX_NOEXCEPT {
         PF_ParamDef def {
             .uu = {
                 .id = id
@@ -105,7 +105,7 @@ protected:
         return PF_Err::None;
     }
     
-    inline PF_Err AddArbitrary2(const A_u_char* name, A_short width, A_short height, PF_ParamFlags flags, PF_ParamUIFlags pui_flags, PF_ArbitraryH dflt, A_long id, void* refcon) const AEX_NOEXCEPT {
+    inline PF_Err AddArbitrary2(const A_char* name, A_short width, A_short height, PF_ParamFlags flags, PF_ParamUIFlags pui_flags, PF_ArbitraryH dflt, A_long id, void* refcon) const AEX_NOEXCEPT {
         PF_ParamDef def {
             .uu = {
                 .id = id,
@@ -128,11 +128,11 @@ protected:
         return PF_Err::None;
     }
 
-    inline PF_Err AddArbitrary(const A_u_char* name, A_short width, A_short height, PF_ParamUIFlags pui_flags, PF_ArbitraryH dflt, A_long id, void* refcon) const AEX_NOEXCEPT {
+    inline PF_Err AddArbitrary(const A_char* name, A_short width, A_short height, PF_ParamUIFlags pui_flags, PF_ArbitraryH dflt, A_long id, void* refcon) const AEX_NOEXCEPT {
 	    return AddArbitrary2(name, width, height, PF_ParamFlags::None, pui_flags, dflt, id, refcon);
     }
 
-    inline PF_Err AddSlider(const A_u_char* name, PF_ParamValue valid_min, PF_ParamValue valid_max, PF_ParamValue  slider_min, PF_ParamValue slider_max, PF_ParamValue dflt, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddSlider(const A_char* name, PF_ParamValue valid_min, PF_ParamValue valid_max, PF_ParamValue  slider_min, PF_ParamValue slider_max, PF_ParamValue dflt, A_long id) const AEX_NOEXCEPT {
         PF_ParamDef def {
             .uu = {
                 .id = id,
@@ -157,7 +157,7 @@ protected:
     }
 
     template<class T>
-    inline PF_Err AddFixed(const A_u_char* name, T valid_min, T valid_max, T slider_min, T slider_max, T dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddFixed(const A_char* name, T valid_min, T valid_max, T slider_min, T slider_max, T dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
         auto value = static_cast<PF_Fixed>(dflt * 65536.0);
         PF_ParamDef def {
             .uu = {
@@ -186,7 +186,7 @@ protected:
 
     inline static constexpr float AEFX_AUDIO_DEFAULT_CURVE_TOLERANCE = 0.05f;
 
-    inline PF_Err AddFloatSlider(const A_u_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort curve_tolerance, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_FSliderFlags what_phase, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddFloatSlider(const A_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort curve_tolerance, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_FSliderFlags what_phase, A_long id) const AEX_NOEXCEPT {
         PF_ParamDef def {
             .uu = {
                 .id = id
@@ -211,7 +211,7 @@ protected:
         return PF_Err::None;
     }
 
-    inline PF_Err AddFloatSliderX(const A_u_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddFloatSliderX(const A_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
         PF_ParamDef def {
             .uu = {
                 .id = id
@@ -237,7 +237,7 @@ protected:
         return PF_Err::None;
     }
 
-    inline PF_Err AddFloatExponentialSlider(const A_u_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort curve_tolerance, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, bool want_phase, PF_FpShort exponent, A_long id) {
+    inline PF_Err AddFloatExponentialSlider(const A_char* name, PF_FpShort valid_min, PF_FpShort valid_max, PF_FpShort slider_min, PF_FpShort slider_max, PF_FpShort curve_tolerance, PF_FpShort dflt, PF_Precision prec, PF_ValueDisplayFlags disp, bool want_phase, PF_FpShort exponent, A_long id) {
         PF_ParamDef def {
             .uu = {
                 .id = id,
@@ -264,7 +264,7 @@ protected:
         return PF_Err::None;
     }
 
-    inline PF_Err AddCheckBox(const A_u_char* name_a, const char* name_b, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddCheckBox(const A_char* name_a, const char* name_b, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
         PF_ParamDef def {
             .uu = {
                 .id = id
@@ -286,7 +286,7 @@ protected:
         return PF_Err::None;
     }
 
-    inline PF_Err AddCheckBoxX(const A_u_char* name, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
+    inline PF_Err AddCheckBoxX(const A_char* name, PF_Boolean dflt, PF_ParamFlags flags, A_long id) const AEX_NOEXCEPT {
         return AddCheckBox(name, "", dflt, flags, id);
     }
 
@@ -299,6 +299,24 @@ protected:
     // AddNull
 
     // AddPopup
+    inline PF_Err AddPopup(const A_char* name, A_short choices, A_short dflt, const A_char* string, A_long id) {
+        PF_ParamDef def {
+            .uu = {
+                .id = id
+            },
+            .param_type = PF_ParamType::Popup,
+            .u = { .pd = {
+                .value = dflt,
+                .num_choices = choices,
+                .dephault = dflt,
+                .u = {
+                    .namesptr = string
+                }
+            }}
+        };
+        in_data->utils->ansi.strcpy(def.name, name);
+        AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+    }
 
     // AddLayer
 
