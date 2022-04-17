@@ -116,7 +116,7 @@ protected:
             .param_type = PF_ParamType::ArbitraryData,
             .flags = flags,
             .u = { .arb_d = {
-                .id = id,
+                .id = static_cast<A_short>(id),
                 .pad = 0,
                 .dephault = dflt,
                 .value = NULL,
@@ -316,6 +316,7 @@ protected:
         };
         in_data->utils->ansi.strcpy(def.name, name);
         AEX_PF_ERR_CHECK(in_data->inter.add_param(in_data->effect_ref, -1, &def));
+        return PF_Err::None;
     }
 
     // AddLayer

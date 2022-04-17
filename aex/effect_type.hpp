@@ -166,6 +166,10 @@ namespace aex {
         A_long num;
         A_u_long den;
     };
+    template<class T>
+    T operator*(T x, const PF_RationalScale& y) {
+        return x * y.num / y.den;
+    }
 
     struct PF_SpecVersion {
         A_short major, minor;
