@@ -41,7 +41,7 @@ enum class PF_OutFlags : A_long{
     AudioEffectToo              = 1 << 30,
     AudioEffectOnly             = 1 << 31,
 };
-template<>struct detail::flag::ops_def<PF_OutFlags>{};
+template<>struct detail::flag::ops_def<PF_OutFlags>:std::true_type{};
 
 enum class PF_OutFlags2 : A_long {
     None = 0,
@@ -73,7 +73,7 @@ enum class PF_OutFlags2 : A_long {
     SupportsGPURenderF32               = 1 << 25,
     Reserved12                         = 1 << 26,
 };
-template<>struct detail::flag::ops_def<PF_OutFlags2>{};
+template<>struct detail::flag::ops_def<PF_OutFlags2>:std::true_type{};
 
 struct PF_OutData {
     static inline constexpr size_t PF_MAX_EFFECT_NAME_LEN = 31;
